@@ -7,7 +7,7 @@ import shutil
 
 subprocess.run([sys.executable, 'setup.py', 'build'], check=True)
 shutil.copy('build/lib.linux-x86_64-3.9/vm.cpython-39-x86_64-linux-gnu.so', 'vm.so')
-subprocess.run(['clear'])
+#subprocess.run(['clear'])
 
 
 # Actual test

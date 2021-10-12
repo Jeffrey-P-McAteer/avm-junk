@@ -40,6 +40,10 @@ static std::int_fast32_t evaluate_ast(AST* ast, std::int_fast32_t* row_data, std
 static PyObject* vm_runit(PyObject *self, PyObject *args) {
   // always 1 object
   PyObject* py_func = PyTuple_GetItem(args, 0);
+  if (!PyCallable_Check(py_func)) {
+    std::cerr << "arg0 not a callable!" << std::endl;
+    return NULL;
+  }
 
   AST fast_func = create_ast(py_func);
 
@@ -63,7 +67,7 @@ static PyObject* vm_runit(PyObject *self, PyObject *args) {
     PyObject* tuple = PyTuple_New(num_cols);
     for (std::uint_fast32_t col=0; col<num_cols; col++) {
       PyTuple_SetItem(tuple, col, PyLong_FromLong( data[(num_cols * row) + col] ));
-      std::cerr << "pylong from long = " << std::setw(4) << data[(num_cols * row) + col] << "  py=" << PyLong_FromLong( data[(num_cols * row) + col] ) << std::endl;
+      //std::cerr << "pylong from long = " << std::setw(4) << data[(num_cols * row) + col] << "  py=" << PyLong_FromLong( data[(num_cols * row) + col] ) << std::endl;
     }
     py_row_data.push_back(tuple);
   }
@@ -71,7 +75,7 @@ static PyObject* vm_runit(PyObject *self, PyObject *args) {
   std::vector<PyObject*> py_return_data;
   for (std::uint_fast32_t row=0; row<num_rows; row++) {
     PyObject* py_ret = PyObject_Call(py_func, py_row_data[row], NULL);
-    std::cerr << "py_ret["<<row<<"] = " << py_ret << "  py_func=" << py_func << "   py_row" << py_row_data[row] <<  std::endl;
+    //std::cerr << "py_ret["<<row<<"] = " << py_ret << "  py_func=" << py_func << "   py_row" << py_row_data[row] <<  std::endl;
     py_return_data.push_back(py_ret);
   }
 
@@ -122,7 +126,11 @@ static struct PyModuleDef vm_module = {
 };
 
 PyMODINIT_FUNC PyInit_vm(void) {
-    return PyModule_Create(&vm_module);
+    PyObject* m = PyModule_Create(&vm_module);
+
+    
+
+    return m;
 }
 
 
